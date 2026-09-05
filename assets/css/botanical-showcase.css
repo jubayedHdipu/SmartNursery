@@ -1,0 +1,464 @@
+/**
+ * Smart Nursery Management System - Botanical Showcase & 3D Interactive CSS
+ * Component 1: Google Nest-Inspired 10-Frame Living Botanical 3D Accordion
+ * Component 2: Verified In-Stock Architectural Specimen Marketplace Cards
+ */
+
+:root {
+  --nest-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --nest-radius: 1.75rem;
+  --emerald-glow: rgba(16, 185, 129, 0.35);
+  --forest-dark: #061a12;
+  --specimen-card-bg: #ffffff;
+}
+
+/* ==========================================================================
+   COMPONENT 1: GOOGLE NEST-INSPIRED 10-FRAME LIVING BOTANICAL ACCORDION
+   ========================================================================== */
+
+.nest-gallery-section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f8fafc 0%, #f0fdf4 50%, #f8fafc 100%);
+}
+
+.nest-track-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 1rem 0;
+}
+
+.nest-track-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.nest-accordion-track {
+  display: flex;
+  gap: 0.85rem;
+  height: 600px;
+  min-width: 100%;
+  width: 100%;
+  align-items: stretch;
+  padding: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+  .nest-accordion-track {
+    height: 520px;
+    min-width: 980px;
+  }
+}
+
+@media (max-width: 640px) {
+  .nest-accordion-track {
+    height: 480px;
+    min-width: 820px;
+  }
+}
+
+/* Individual Frame (Resting State) */
+.nest-frame {
+  flex: 1;
+  min-width: 65px;
+  height: 100%;
+  border-radius: var(--nest-radius);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: #081c15;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  transition: flex 0.65s var(--nest-ease), transform 0.4s ease, filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  will-change: flex, transform;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* Dim Inactive Siblings when Hovering */
+.nest-accordion-track:hover .nest-frame:not(:hover):not(.is-active) {
+  flex: 0.65;
+  filter: brightness(0.7) saturate(0.75);
+}
+
+/* Active / Hovered Frame (Expanded State) */
+.nest-frame.is-active,
+.nest-frame:hover {
+  flex: 6.5;
+  filter: none !important;
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 25px 60px -12px rgba(6, 78, 59, 0.3), 0 0 30px rgba(16, 185, 129, 0.15);
+}
+
+/* Background Image Layer (3D Parallax Gliding) */
+.nest-frame-bg {
+  position: absolute;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  object-fit: cover;
+  pointer-events: none;
+  transform: translate3d(calc(var(--mouse-x, 0) * 22px), calc(var(--mouse-y, 0) * 16px), 0) scale(1.06);
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.4, 1);
+  will-change: transform;
+}
+
+/* Contrast Overlay Vignette */
+.nest-frame-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 19, 12, 0.3) 0%,
+    rgba(4, 19, 12, 0.1) 40%,
+    rgba(4, 19, 12, 0.75) 80%,
+    rgba(4, 19, 12, 0.95) 100%
+  );
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.nest-frame.is-active .nest-frame-overlay,
+.nest-frame:hover .nest-frame-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 19, 12, 0.2) 0%,
+    rgba(4, 19, 12, 0) 40%,
+    rgba(4, 19, 12, 0.6) 70%,
+    rgba(4, 19, 12, 0.92) 100%
+  );
+}
+
+/* Specular Glare Reflection on Cursor Move */
+.nest-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at calc(50% + var(--mouse-x, 0) * 50%) calc(50% + var(--mouse-y, 0) * 50%),
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.05) 35%,
+    transparent 65%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: overlay;
+}
+
+.nest-frame.is-active .nest-glare,
+.nest-frame:hover .nest-glare {
+  opacity: 1;
+}
+
+/* Compressed Frame Number & Vertical Label */
+.nest-vertical-label {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.4s ease;
+}
+
+.nest-vertical-num {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.nest-vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.nest-frame.is-active .nest-vertical-label,
+.nest-frame:hover .nest-vertical-label {
+  opacity: 0;
+  transform: translateX(-50%) translateY(15px);
+}
+
+/* Floating Top Badge */
+.nest-top-pill {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 15;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(8, 28, 21, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #a7f3d0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s var(--nest-ease);
+}
+
+.nest-frame.is-active .nest-top-pill,
+.nest-frame:hover .nest-top-pill {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating Reveal Card (Visible on Active/Hover) */
+.nest-reveal-card {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  z-index: 20;
+  background: rgba(8, 28, 21, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  opacity: 0;
+  transform: translateY(25px) scale(0.96);
+  pointer-events: none;
+  transition: all 0.5s var(--nest-ease) 0.05s;
+}
+
+.nest-frame.is-active .nest-reveal-card,
+.nest-frame:hover .nest-reveal-card {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.nest-metric-pill {
+  background: rgba(4, 19, 12, 0.7);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.4rem 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  color: #e2e8f0;
+}
+
+/* Modal Inspection Popover */
+.specimen-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 19, 12, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s ease;
+}
+
+.specimen-modal-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.specimen-modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 2rem;
+  max-width: 860px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.5);
+  transform: scale(0.92) translateY(20px);
+  transition: all 0.35s var(--nest-ease);
+}
+
+.specimen-modal-backdrop.is-open .specimen-modal-content {
+  transform: scale(1) translateY(0);
+}
+
+/* ==========================================================================
+   COMPONENT 2: ARCHITECTURAL SPECIMEN MARKETPLACE CARDS
+   ========================================================================== */
+
+.specimen-marketplace-section {
+  background: #ffffff;
+  position: relative;
+  z-index: 10;
+}
+
+.specimen-card {
+  background: #ffffff;
+  border-radius: 2rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.4s var(--nest-ease), box-shadow 0.4s var(--nest-ease), border-color 0.4s ease;
+}
+
+.specimen-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(6, 78, 59, 0.15), 0 0 25px rgba(16, 185, 129, 0.08);
+}
+
+/* Live Dispatch Indicator Badge */
+.live-dispatch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #065f46;
+  font-size: 0.725rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.pulse-dot-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  position: relative;
+}
+
+.pulse-dot-green::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  animation: pulseDot 1.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Specimen Image Viewport */
+.specimen-img-viewport {
+  position: relative;
+  height: 280px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.specimen-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--nest-ease), opacity 0.3s ease;
+}
+
+.specimen-card:hover .specimen-main-img {
+  transform: scale(1.07);
+}
+
+/* Interactive Mini-Gallery Thumbnail Switcher Dots */
+.specimen-thumb-strip {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 25;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.35rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.specimen-thumb-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.specimen-thumb-dot:hover,
+.specimen-thumb-dot.is-active {
+  background: #10b981;
+  transform: scale(1.25);
+  box-shadow: 0 0 10px #10b981;
+}
+
+/* Hover Quick-Spec Frosted Overlay */
+.specimen-quick-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 28, 21, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  transform: translateY(15px);
+  pointer-events: none;
+  transition: all 0.4s var(--nest-ease);
+  z-index: 20;
+}
+
+.specimen-card:hover .specimen-quick-overlay {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Animated SVG Telemetry Meter */
+.meter-bar-track {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  position: relative;
+}
+
+.meter-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  width: var(--meter-val, 70%);
+  transition: width 0.8s var(--nest-ease);
+}

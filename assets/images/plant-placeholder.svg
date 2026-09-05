@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="leafGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="leafGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="potGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bgGrad)" rx="24"/>
+  <circle cx="200" cy="200" r="140" fill="#047857" opacity="0.15"/>
+  <!-- Leaves -->
+  <path d="M200,240 C170,160 120,130 110,90 C160,90 190,140 200,240 Z" fill="url(#leafGrad1)"/>
+  <path d="M200,240 C230,160 280,130 290,90 C240,90 210,140 200,240 Z" fill="url(#leafGrad2)"/>
+  <path d="M200,240 C190,140 180,90 200,50 C220,90 210,140 200,240 Z" fill="url(#leafGrad1)"/>
+  <path d="M200,240 C150,200 130,180 90,170 C120,220 160,230 200,240 Z" fill="url(#leafGrad2)"/>
+  <path d="M200,240 C250,200 270,180 310,170 C280,220 240,230 200,240 Z" fill="url(#leafGrad1)"/>
+  <!-- Stem -->
+  <path d="M200,240 L200,280" stroke="#065f46" stroke-width="6" stroke-linecap="round"/>
+  <!-- Pot -->
+  <polygon points="150,260 250,260 235,340 165,340" fill="url(#potGrad)"/>
+  <rect x="140" y="250" width="120" height="15" rx="6" fill="#b45309"/>
+  <!-- Brand Text -->
+  <text x="200" y="375" text-anchor="middle" fill="#6ee7b7" font-family="Outfit, sans-serif" font-size="14" font-weight="600" letter-spacing="1">SMART NURSERY</text>
+</svg>

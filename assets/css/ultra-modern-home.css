@@ -1,0 +1,786 @@
+/**
+ * Smart Nursery Management System - Ultra-Modern Botanical Theme
+ * Fresh Light Mode with Emerald Accents, Glassmorphism, 3D Depth & Masonry Gallery
+ */
+
+:root {
+  --forest-950: #04130c;
+  --forest-900: #081c15;
+  --forest-850: #0d2818;
+  --forest-800: #1b4332;
+  --forest-700: #2d6a4f;
+  --forest-600: #40916c;
+  --forest-500: #52b788;
+  --forest-400: #74c69d;
+  --forest-300: #95d5b2;
+  --forest-100: #d8f3dc;
+  --forest-50: #f0fdf4;
+
+  --emerald-primary: #059669;
+  --emerald-hover: #10b981;
+  --emerald-neon: #00f59b;
+  --mint-glow: #e6f48b;
+  --accent-cyan: #0284c7;
+  --accent-amber: #d97706;
+  --accent-rose: #e11d48;
+
+  --glass-bg-light: rgba(255, 255, 255, 0.88);
+  --glass-bg-card-light: rgba(255, 255, 255, 0.94);
+  --glass-border-light: rgba(226, 232, 240, 0.9);
+  --glass-border-glow: rgba(16, 185, 129, 0.35);
+  --glass-blur: blur(16px);
+}
+
+/* ==========================================================================
+   1. GLOBAL & AMBIENT LIGHT EFFECTS
+   ========================================================================== */
+
+.ambient-glow-green-light {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.10) 0%, rgba(5, 150, 105, 0.03) 50%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-glow-emerald-light {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.12) 0%, rgba(16, 185, 129, 0.04) 50%, transparent 70%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrolled Navbar (Frosted Crisp Glass) */
+.glass-nav-scrolled {
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.07), 0 0 20px rgba(16, 185, 129, 0.06) !important;
+}
+
+/* Base Light Glass Containers */
+.glass-panel-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border-light);
+  box-shadow: 0 15px 35px -10px rgba(6, 78, 59, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.glass-panel-card {
+  background: var(--glass-bg-card-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 20px 40px -12px rgba(5, 150, 105, 0.12), 0 0 25px rgba(16, 185, 129, 0.08);
+}
+
+.title-gradient-emerald {
+  background: linear-gradient(135deg, #065f46 0%, #059669 60%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   2. CINEMATIC HERO SLIDER (SWIPER)
+   ========================================================================== */
+
+.hero-swiper-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slide-item {
+  position: relative;
+  min-height: 640px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .hero-slide-item {
+    min-height: 720px;
+  }
+}
+
+.hero-slide-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  transition: transform 7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.swiper-slide-active .hero-slide-bg {
+  transform: scale(1.15);
+}
+
+.hero-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg,
+      rgba(4, 19, 12, 0.95) 0%,
+      rgba(8, 28, 21, 0.88) 45%,
+      rgba(13, 40, 24, 0.70) 75%,
+      rgba(4, 19, 12, 0.85) 100%);
+  backdrop-filter: blur(2px);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+}
+
+.hero-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: #a7f3d0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.hero-title-gradient {
+  background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 70%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Swiper Controls */
+.hero-swiper-pagination {
+  position: absolute;
+  bottom: 2rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 25 !important;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-swiper-pagination .swiper-pagination-bullet {
+  width: 38px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 1;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-swiper-pagination .swiper-pagination-bullet-active {
+  width: 60px;
+  background: #10b981;
+  box-shadow: 0 0 12px #10b981;
+}
+
+.swiper-nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(8, 28, 21, 0.7);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 25;
+}
+
+.swiper-nav-btn:hover {
+  background: #10b981;
+  color: #04130c;
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  transform: scale(1.08);
+}
+
+.autoplay-progress-wrap {
+  position: absolute;
+  right: 2.5rem;
+  bottom: 2rem;
+  z-index: 25;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.autoplay-progress-wrap svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  stroke-width: 3px;
+  stroke: rgba(52, 211, 153, 0.85);
+  fill: none;
+  stroke-dashoffset: calc(125.6 * (1 - var(--progress, 0)));
+  stroke-dasharray: 125.6;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.autoplay-progress-wrap span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #a7f3d0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   3. INTERACTIVE 3D SHOWCASE CARD (LIGHT AMBIENCE)
+   ========================================================================== */
+
+.showcase-3d-wrapper {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.showcase-3d-card {
+  transform-style: preserve-3d;
+  background: linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow:
+    0 25px 50px -12px rgba(5, 150, 105, 0.15),
+    0 0 35px -5px rgba(16, 185, 129, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  border-radius: 2rem;
+  transition: box-shadow 0.4s ease;
+}
+
+.showcase-3d-card:hover {
+  box-shadow:
+    0 35px 65px -15px rgba(5, 150, 105, 0.25),
+    0 0 45px 0px rgba(16, 185, 129, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+}
+
+.transform-z-30 {
+  transform: translateZ(30px);
+}
+
+.transform-z-50 {
+  transform: translateZ(50px);
+}
+
+.transform-z-70 {
+  transform: translateZ(70px);
+}
+
+/* Hotspot Beacons */
+.hotspot-beacon {
+  position: absolute;
+  z-index: 30;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.hotspot-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #059669;
+  box-shadow: 0 0 15px #10b981;
+  position: relative;
+}
+
+.hotspot-dot::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(16, 185, 129, 0.6);
+  animation: radarPulse 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.hotspot-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateZ(40px);
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  font-size: 0.725rem;
+  font-weight: 600;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0.95;
+  transition: all 0.3s ease;
+}
+
+.hotspot-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.92) transparent transparent transparent;
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   4. "SMART NURSERY ENGINE" FEATURE CARDS (CLEAN LIGHT THEME)
+   ========================================================================== */
+
+.glowing-engine-card-light {
+  position: relative;
+  background: #ffffff;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glowing-engine-card-light::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: conic-gradient(from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(16, 185, 129, 0.2) 60deg,
+      rgba(5, 150, 105, 0.5) 120deg,
+      rgba(14, 165, 233, 0.3) 180deg,
+      transparent 240deg);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  animation: rotateGlow 6s linear infinite;
+}
+
+.glowing-engine-card-light:hover {
+  transform: translateY(-8px);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 20px 40px -10px rgba(5, 150, 105, 0.15), 0 0 25px rgba(16, 185, 129, 0.1);
+}
+
+.glowing-engine-card-light:hover::before {
+  opacity: 1;
+}
+
+@keyframes rotateGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.engine-icon-wrap-light {
+  width: 56px;
+  height: 56px;
+  border-radius: 1.125rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #059669;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.glowing-engine-card-light:hover .engine-icon-wrap-light {
+  transform: scale(1.1) rotate(5deg);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.4);
+}
+
+/* ==========================================================================
+   5. FILTERABLE MASONRY BOTANICAL GALLERY (RICH DESIGN & BADGES)
+   ========================================================================== */
+
+.masonry-grid-container {
+  column-count: 1;
+  column-gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .masonry-grid-container {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry-grid-container {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1280px) {
+  .masonry-grid-container {
+    column-count: 4;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  position: relative;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(1);
+}
+
+.masonry-item.is-hidden {
+  display: none !important;
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.masonry-item:hover {
+  transform: translateY(-6px);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 20px 45px -10px rgba(5, 150, 105, 0.18), 0 0 25px rgba(16, 185, 129, 0.12);
+}
+
+.masonry-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.masonry-item:hover img {
+  transform: scale(1.06);
+}
+
+/* Floating Corner Badges */
+.masonry-badge-top-left {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.masonry-badge-top-right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+.masonry-tag-pill {
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.masonry-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(15, 23, 42, 0.95) 0%,
+      rgba(15, 23, 42, 0.6) 45%,
+      rgba(15, 23, 42, 0.1) 75%,
+      transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+}
+
+.masonry-item:hover .masonry-overlay {
+  opacity: 1;
+}
+
+/* Gallery Filter Pills (Clean Modern) */
+.gallery-filter-btn {
+  padding: 0.6rem 1.35rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  color: #475569;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.gallery-filter-btn:hover {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #047857;
+}
+
+.gallery-filter-btn.active {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border-color: #059669;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+/* GLightbox Overrides for Botanical Luxury */
+.glightbox-clean .gslide-description {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 1.25rem !important;
+  padding: 1.5rem !important;
+  color: #e2e8f0 !important;
+}
+
+.glightbox-clean .gslide-title {
+  color: #ffffff !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.goverlay {
+  background: rgba(4, 19, 12, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* ==========================================================================
+   6. AI MATCHMAKER MINI-TOOL (LIGHT & INTUITIVE)
+   ========================================================================== */
+
+.matchmaker-step-btn-light {
+  background: #ffffff;
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.25rem;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.matchmaker-step-btn-light:hover {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.08);
+}
+
+.matchmaker-step-btn-light.is-selected {
+  background: linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #059669;
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.15), inset 0 0 10px rgba(16, 185, 129, 0.1);
+}
+
+.matchmaker-step-btn-light.is-selected .step-icon-light {
+  background: #059669;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(5, 150, 105, 0.4);
+}
+
+.step-icon-light {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #059669;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+/* AI Recommendation Result Card (Light Theme) */
+.ai-result-card-light {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06);
+}
+
+.ai-result-card-light:hover {
+  transform: translateY(-6px);
+  border-color: #059669;
+  box-shadow: 0 20px 40px -10px rgba(5, 150, 105, 0.18), 0 0 25px rgba(16, 185, 129, 0.1);
+}
+
+.ai-match-score-badge {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+/* ==========================================================================
+   7. MODERN HORTICULTURAL FOOTER (DEEP FOREST)
+   ========================================================================== */
+
+.footer-dark-forest {
+  background-color: var(--forest-900);
+  background-image:
+    radial-gradient(at 10% 20%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(5, 150, 105, 0.06) 0px, transparent 50%);
+  border-top: 1px solid rgba(52, 211, 153, 0.15);
+}
+
+.newsletter-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  padding: 0.35rem 0.35rem 0.35rem 1.25rem;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.newsletter-input-wrap:focus-within {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.newsletter-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.875rem;
+  width: 100%;
+  outline: none;
+}
+
+.newsletter-input::placeholder {
+  color: #94a3b8;
+}
+
+.newsletter-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #04130c;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.newsletter-btn:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  transform: scale(1.03);
+}
+
+/* ==========================================================================
+   8. KEYFRAME ANIMATIONS & UTILITIES
+   ========================================================================== */
+
+@keyframes floatSlow {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(1.5deg);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
