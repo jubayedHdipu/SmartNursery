@@ -83,7 +83,23 @@ try {
             ? "স্বাগতম, {$user['name']}! সফলভাবে লগইন হয়েছে।" 
             : "Welcome back, {$user['name']}! You have logged in successfully.";
 
-        // Step 13: Handle custom redirect URL if user was trying to access a protected page
+        // Step 13: Dispatch security login notification email via SMTP
+        try {
+            require_once __DIR__ . '/services/Mailer.php';
+            Mailer::sendLoginNotification([
+                'name'         => $user['name'],
+                'email'        => $user['email'],
+                'role_name'    => $user['role_name'],
+                'role_display' => $user['role_display'] ?? $user['role_name'],
+                'ip_address'   => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                'user_agent'   => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser',
+                'time'         => date('F j, Y - g:i A T')
+            ]);
+        } catch (Throwable $mailEx) {
+            error_log("Failed to dispatch login alert email: " . $mailEx->getMessage());
+        }
+
+        // Step 14: Handle custom redirect URL if user was trying to access a protected page
         if (!empty($redirectUrl)) {
             if (str_starts_with($redirectUrl, 'http')) {
                 header("Location: " . $redirectUrl);

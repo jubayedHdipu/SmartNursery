@@ -141,15 +141,29 @@ try {
     // Commit transaction permanently to database
     $db->commit();
 
-    // Step 12: Set success notification and redirect to login page
+    // Step 12: Dispatch welcome/onboarding email via SMTP
+    try {
+        require_once __DIR__ . '/services/Mailer.php';
+        Mailer::sendWelcomeEmail([
+            'name'         => $name,
+            'email'        => $email,
+            'role'         => $targetRole,
+            'nursery_name' => $nurseryName,
+            'phone'        => $phone
+        ]);
+    } catch (Throwable $mailEx) {
+        error_log("Failed to dispatch registration welcome email: " . $mailEx->getMessage());
+    }
+
+    // Step 13: Set success notification and redirect to login page
     if ($targetRole === 'vendor') {
         $_SESSION['flash_success'] = is_bangla()
-            ? 'নার্সারি রেজিস্ট্রেশন সফল হয়েছে! অ্যাডমিন অনুমোদনের পর আপনি লগইন করতে পারবেন।'
-            : 'Vendor registration submitted successfully! You can log in once approved by the administrator.';
+            ? 'নার্সারি রেজিস্ট্রেশন সফল হয়েছে! কনফার্মেশন ইমেইল পাঠানো হয়েছে। অ্যাডমিন অনুমোদনের পর আপনি লগইন করতে পারবেন।'
+            : 'Vendor registration submitted successfully! A confirmation email has been sent. You can log in once approved by administration.';
     } else {
         $_SESSION['flash_success'] = is_bangla()
-            ? 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! অনুগ্রহ করে লগইন করুন।'
-            : 'Account registered successfully! Please log in with your credentials.';
+            ? 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে! আপনার ইমেইলে একটি স্বাগতম বার্তা পাঠানো হয়েছে। অনুগ্রহ করে লগইন করুন।'
+            : 'Account registered successfully! A welcome email has been sent to your inbox. Please log in with your credentials.';
     }
 
     header("Location: " . BASE_URL . "/login.php");

@@ -16,7 +16,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? 'save_settings';
 
     if (verify_csrf_token($csrf)) {
-        if ($action === 'change_password') {
+        if ($action === 'test_smtp_email') {
+            $testRecipient = trim($_POST['test_email_recipient'] ?? $currentUser['email']);
+            require_once __DIR__ . '/../services/Mailer.php';
+            $mailResult = Mailer::sendTestEmail($testRecipient);
+            if (!empty($mailResult['success'])) {
+                log_audit('test_smtp', 'system_settings', null, "Sent test email to {$testRecipient}");
+                set_flash('success', is_bangla() 
+                    ? "সফলভাবে টেস্ট ইমেইল পাঠানো হয়েছে ({$testRecipient})। অনুগ্রহ করে ইনবক্স চেক করুন।" 
+                    : "Test email successfully delivered via SMTP to {$testRecipient}! Please check your inbox.");
+            } else {
+                set_flash('error', (is_bangla() ? "ইমেইল পাঠানো ব্যর্থ হয়েছে: " : "SMTP delivery failed: ") . ($mailResult['error'] ?? 'Unknown error'));
+            }
+            redirect('owner/settings.php#smtp-section');
+        } elseif ($action === 'change_password') {
             $curPass  = $_POST['current_password'] ?? '';
             $newPass  = $_POST['new_password'] ?? '';
             $confPass = $_POST['confirm_password'] ?? '';
@@ -112,7 +125,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'platform_commission_rate'  => (string)max(0, (float)($_POST['platform_commission_rate'] ?? 10)),
                 'sslcommerz_store_id'       => trim($_POST['sslcommerz_store_id'] ?? 'testbox'),
                 'sslcommerz_store_password' => trim($_POST['sslcommerz_store_password'] ?? 'qwerty'),
-                'sslcommerz_is_sandbox'     => isset($_POST['sslcommerz_is_sandbox']) ? '1' : '0'
+                'sslcommerz_is_sandbox'     => isset($_POST['sslcommerz_is_sandbox']) ? '1' : '0',
+                'smtp_host'                 => trim($_POST['smtp_host'] ?? 'mail.rifatxtra.com'),
+                'smtp_port'                 => (string)max(1, (int)($_POST['smtp_port'] ?? 587)),
+                'smtp_secure'               => trim($_POST['smtp_secure'] ?? 'tls'),
+                'smtp_user'                 => trim($_POST['smtp_user'] ?? 'business@jubayeddipu.online'),
+                'smtp_pass'                 => trim($_POST['smtp_pass'] ?? '@@teamX@@420'),
+                'smtp_from_email'           => trim($_POST['smtp_from_email'] ?? 'business@jubayeddipu.online'),
+                'smtp_from_name'            => trim($_POST['smtp_from_name'] ?? 'Smart Nursery Ecosystem'),
+                'smtp_notify_login'         => isset($_POST['smtp_notify_login']) ? '1' : '0',
+                'smtp_notify_register'      => isset($_POST['smtp_notify_register']) ? '1' : '0'
             ];
 
             try {
@@ -132,6 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'avatar' => $ownerAvatar,
                     'id'     => $currentUser['id']
                 ]);
+
+                // Clear Mailer runtime cache
+                require_once __DIR__ . '/../services/Mailer.php';
+                Mailer::clearCache();
 
                 log_audit('update_settings', 'system_settings', null, "Owner updated platform brand identity, economics & avatar");
                 set_flash('success', is_bangla() ? 'প্ল্যাটফর্মের সকল ব্র্যান্ডিং, প্রোফাইল ছবি ও সিস্টেম সেটিংস সংরক্ষিত হয়েছে।' : 'Global system, owner profile, and brand identity saved successfully.');
@@ -460,7 +486,112 @@ $curLogoImg  = $currentSettings['site_logo_image'] ?? '';
                 </div>
             </div>
 
-            <!-- 5. Smart Botanical Recommendation Engine Configuration -->
+            <!-- 5. Outbound SMTP Mail Server Configuration -->
+            <div id="smtp-section" class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-sm">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">
+                                <?= is_bangla() ? 'এসএমটিপি ইমেইল সার্ভার কনফিগারেশন' : 'Outbound SMTP Mail Server Configuration' ?>
+                            </h3>
+                            <p class="text-[11px] text-slate-500">
+                                <?= is_bangla() ? 'লগইন সতর্কতা ও রেজিস্ট্রেশন স্বাগতম ইমেইল পাঠানোর সেটিংস' : 'Configure SMTP mail delivery for new registration onboarding and login security alerts' ?>
+                            </p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                        <i class="fa-solid fa-circle-check mr-1.5 text-[8px]"></i> <?= is_bangla() ? 'সক্রিয় সংযোগ (Active)' : 'Active (Port 587 STARTTLS)' ?>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <?= is_bangla() ? 'এসএমটিপি সার্ভার হোস্ট (SMTP Host)' : 'SMTP Server Host' ?> *
+                        </label>
+                        <input type="text" name="smtp_host" value="<?= sanitize($currentSettings['smtp_host'] ?? 'mail.rifatxtra.com') ?>" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-emerald-500">
+                        <p class="text-[10px] text-slate-400 mt-1">Incoming Mail (IMAP): <code>mail.rifatxtra.com:993</code> (SSL/TLS)</p>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <?= is_bangla() ? 'পোর্ট ও প্রোটোকল' : 'Port & Protocol' ?> *
+                        </label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" name="smtp_port" value="<?= sanitize($currentSettings['smtp_port'] ?? '587') ?>" required
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-emerald-500">
+                            <select name="smtp_secure" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-slate-900">
+                                <option value="tls" <?= ($currentSettings['smtp_secure'] ?? 'tls') === 'tls' ? 'selected' : '' ?>>STARTTLS (587)</option>
+                                <option value="ssl" <?= ($currentSettings['smtp_secure'] ?? '') === 'ssl' ? 'selected' : '' ?>>SSL/TLS (465)</option>
+                                <option value="plain" <?= ($currentSettings['smtp_secure'] ?? '') === 'plain' ? 'selected' : '' ?>>None (25)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <?= is_bangla() ? 'মেইলবক্স ইউজারনেম' : 'SMTP Mailbox Username' ?> *
+                        </label>
+                        <input type="text" name="smtp_user" value="<?= sanitize($currentSettings['smtp_user'] ?? 'business@jubayeddipu.online') ?>" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <?= is_bangla() ? 'মেইলবক্স পাসওয়ার্ড' : 'SMTP Mailbox Password' ?> *
+                        </label>
+                        <input type="password" name="smtp_pass" value="<?= sanitize($currentSettings['smtp_pass'] ?? '@@teamX@@420') ?>" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <?= is_bangla() ? 'প্রেরকের ইমেইল (From Email)' : 'Default Sender (From Email)' ?> *
+                        </label>
+                        <input type="email" name="smtp_from_email" value="<?= sanitize($currentSettings['smtp_from_email'] ?? 'business@jubayeddipu.online') ?>" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-emerald-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">
+                            <?= is_bangla() ? 'প্রেরকের নাম (From Name)' : 'Default Sender (From Name)' ?> *
+                        </label>
+                        <input type="text" name="smtp_from_name" value="<?= sanitize($currentSettings['smtp_from_name'] ?? 'Smart Nursery Ecosystem') ?>" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-slate-900 focus:bg-white focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <!-- Event Triggers Toggles -->
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                    <span class="block text-xs font-bold text-slate-800"><?= is_bangla() ? 'স্বয়ংক্রিয় ইমেইল নোটিফিকেশন ইভেন্টসমূহ:' : 'Automated Email Notification Triggers:' ?></span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label class="flex items-start space-x-3 text-slate-700 cursor-pointer">
+                            <input type="checkbox" name="smtp_notify_register" value="1" <?= (!isset($currentSettings['smtp_notify_register']) || !empty($currentSettings['smtp_notify_register'])) ? 'checked' : '' ?> class="w-4 h-4 mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                            <div>
+                                <span class="font-bold block text-slate-800"><?= is_bangla() ? 'নতুন অ্যাকাউন্ট রেজিস্ট্রেশন স্বাগতম বার্তা' : 'New User Registration Welcome Email' ?></span>
+                                <span class="text-[11px] text-slate-500 leading-snug"><?= is_bangla() ? 'কাস্টমার ও ভেন্ডর রেজিস্ট্রেশন করার সাথে সাথে স্বাগতম বার্তা ও গাইড পাঠায়' : 'Dispatches branded botanical welcome email to customers & verification notice to vendors' ?></span>
+                            </div>
+                        </label>
+                        <label class="flex items-start space-x-3 text-slate-700 cursor-pointer">
+                            <input type="checkbox" name="smtp_notify_login" value="1" <?= (!isset($currentSettings['smtp_notify_login']) || !empty($currentSettings['smtp_notify_login'])) ? 'checked' : '' ?> class="w-4 h-4 mt-0.5 rounded text-emerald-600 focus:ring-emerald-500">
+                            <div>
+                                <span class="font-bold block text-slate-800"><?= is_bangla() ? 'লগইন নিরাপত্তা সতর্কতা ইমেইল' : 'Successful Login Security Alert' ?></span>
+                                <span class="text-[11px] text-slate-500 leading-snug"><?= is_bangla() ? 'ব্যবহারকারী লগইন করলে সময়, আইপি ও ব্রাউজার বিবরণসহ অ্যালার্ট পাঠায়' : 'Alerts account holder with login timestamp, client IP, and device info' ?></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Smart Botanical Recommendation Engine Configuration -->
             <div class="bg-gradient-to-br from-emerald-950/5 to-teal-950/10 p-6 sm:p-8 rounded-3xl border-2 border-emerald-500/40 shadow-xs space-y-5">
                 <div class="flex items-center justify-between border-b border-emerald-200/60 pb-3">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-900 flex items-center space-x-2">
@@ -479,11 +610,46 @@ $curLogoImg  = $currentSettings['site_logo_image'] ?? '';
             </div>
 
             <div class="flex items-center space-x-4">
-                <button type="submit" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-900/20 transition transform hover:-translate-y-0.5">
+                <button type="submit" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-900/20 transition transform hover:-translate-y-0.5 cursor-pointer">
                     <?= is_bangla() ? 'সব সেটিংস ও প্রোফাইল সংরক্ষণ করুন' : 'Save All Global Settings & Profile' ?>
                 </button>
             </div>
         </form>
+
+        <!-- SMTP Live Diagnostic Test Card -->
+        <div class="bg-gradient-to-br from-slate-900 to-emerald-950 p-6 sm:p-8 rounded-3xl text-white shadow-xl space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-800/60 pb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 text-sm shadow-xs">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                            <?= is_bangla() ? 'এসএমটিপি লাইভ ডেলিভারি টেস্ট' : 'Live SMTP Mailbox Diagnostic Test' ?>
+                        </h3>
+                        <p class="text-[11px] text-slate-300">
+                            <?= is_bangla() ? 'সার্ভার সংযোগ ও ইনবক্স ডেলিভারি সরাসরি পরীক্ষা করুন' : 'Dispatch a test email instantly to verify mailbox connectivity and delivery' ?>
+                        </p>
+                    </div>
+                </div>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 self-start sm:self-auto">
+                    ● Ready to Send
+                </span>
+            </div>
+
+            <form action="settings.php" method="POST" class="flex flex-col sm:flex-row items-center gap-3 text-xs">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="test_smtp_email">
+                <div class="flex-1 w-full">
+                    <input type="email" name="test_email_recipient" value="<?= sanitize($currentUser['email'] ?? 'business@jubayeddipu.online') ?>" required placeholder="recipient@example.com"
+                           class="w-full bg-slate-800/90 border border-emerald-700/50 rounded-xl px-4 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 font-mono">
+                </div>
+                <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl transition shadow-md shadow-emerald-500/20 flex items-center justify-center space-x-2 shrink-0 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                    <span><?= is_bangla() ? 'টেস্ট ইমেইল পাঠান' : 'Send Test Email Now' ?></span>
+                </button>
+            </form>
+        </div>
 
         <!-- Owner Password Change Card -->
         <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-4">
